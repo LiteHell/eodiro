@@ -1,13 +1,13 @@
 <template>
   <div id="go-back-wrapper">
     <div v-show="prevRouteName" id="go-back" :class="{ hidden: isHidden }">
-      <EodiroLink
+      <!-- <EodiroLink
         :to="jumpLink"
         class="jump-link"
         :class="{ exists: isJumpExists }"
       >
         <button class="jump-btn" />
-      </EodiroLink>
+      </EodiroLink> -->
 
       <EodiroLink
         class="prev-link"
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
 import { CEM } from '~/modules/custom-event-manager'
 import EodiroLink from '~/components/global/EodiroLink'
 
@@ -43,17 +43,17 @@ export default {
     prevRouteName() {
       return this.$route.meta.prevRouteName
     },
-    ...mapState({
-      jumpHistory: (state) => state.jumpHistory,
-    }),
-    isJumpExists() {
-      return this.jumpHistory.length > 0
-    },
-    jumpLink() {
-      return this.isJumpExists
-        ? this.localePath(this.jumpHistory[this.jumpHistory.length - 1])
-        : ''
-    },
+    // ...mapState({
+    //   jumpHistory: (state) => state.jumpHistory,
+    // }),
+    // isJumpExists() {
+    //   return this.jumpHistory.length > 0
+    // },
+    // jumpLink() {
+    //   return this.isJumpExists
+    //     ? this.localePath(this.jumpHistory[this.jumpHistory.length - 1])
+    //     : ''
+    // },
   },
   mounted() {
     const that = this // alias
