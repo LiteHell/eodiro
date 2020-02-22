@@ -98,11 +98,11 @@
         <!-- <Button class="sign-out-btn" full @click="signOut">
           {{ $t('me.signOut') }}
         </Button> -->
-        <EodiroLink :hook="signOut" :to="localePath('index')" replace>
+        <NuxtLink :hook="signOut" :to="localePath('index')" replace>
           <Button class="sign-out-btn" full @click="signOut">
             {{ $t('me.signOut') }}
           </Button>
-        </EodiroLink>
+        </NuxtLink>
       </div>
 
       <div>
@@ -124,11 +124,10 @@ import useAxios from '~/modules/use-axios'
 import { UserApi } from '~/modules/eodiro-api'
 import { Button, Grid, ArrowBlock } from '~/components/ui'
 // import { isCached } from '~/modules/nuxt/is-cached'
-import EodiroLink from '~/components/global/EodiroLink'
 
 export default {
   name: 'me',
-  components: { Button, Grid, ArrowBlock, EodiroLink },
+  components: { Button, Grid, ArrowBlock },
   mixins: [pageBase, requireAuthMixin],
   async asyncData({ app, req, res, store, route }) {
     if (!store.state.auth.isSignedIn) return

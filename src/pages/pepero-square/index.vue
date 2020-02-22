@@ -6,10 +6,7 @@
       </h1>
       <button class="new-post-btn">
         <span>+</span>
-        <EodiroLink
-          :to="localePath('pepero-square-new')"
-          class="absolute-link"
-        />
+        <NuxtLink :to="localePath('pepero-square-new')" class="absolute-link" />
       </button>
     </div>
     <div class="posts-list">
@@ -43,11 +40,10 @@ import autoHead from '~/modules/auto-head'
 import EodiroDialog from '~/modules/eodiro-dialog'
 import { SquareApi } from '~/modules/eodiro-api'
 import wait from '~/modules/wait'
-import EodiroLink from '~/components/global/EodiroLink'
 
 export default {
   name: 'pepero-square-index',
-  components: { PostItem, EodiroLink },
+  components: { PostItem },
   mixins: [pageBase],
   async asyncData(ctx) {
     if (!ctx.req) return { isInitialLoadSet: false }
