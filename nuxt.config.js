@@ -79,11 +79,7 @@ const config = {
     '~/assets/styles/stylus/spring.styl',
   ],
 
-  plugins: [
-    { src: '~/plugins/init' },
-    { src: '~/plugins/ga', mode: 'client' },
-    '~/plugins/vue-composition-api',
-  ],
+  plugins: [{ src: '~/plugins/init' }, { src: '~/plugins/ga', mode: 'client' }],
 
   buildModules: ['@nuxtjs/eslint-module', '~/modules/nuxt/extend-route'],
 
