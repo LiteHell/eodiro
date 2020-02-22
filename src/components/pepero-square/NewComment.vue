@@ -17,21 +17,24 @@
 
 <script>
 import dayjs from 'dayjs'
-import { LoremIpsum } from 'lorem-ipsum'
-const lorem = new LoremIpsum()
 
 export default {
   data() {
     return {
-      comment: ''
+      comment: '',
     }
   },
   methods: {
     leaveComment(event) {
+      if (this.comment.trim().length === 0) {
+        alert('댓글 내용을 입력하세요.')
+        return
+      }
+
       const newCommentObj = {
         body: this.comment,
-        at: dayjs(),
-        author: lorem.generateWords(1)
+        uploadedAt: dayjs(),
+        userId: this.$store.state.auth.userId,
       }
 
       // Emit event
@@ -40,8 +43,8 @@ export default {
       // Clear input
       this.comment = ''
       event.target.blur()
-    }
-  }
+    },
+  },
 }
 </script>
 

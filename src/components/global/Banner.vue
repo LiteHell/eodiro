@@ -1,31 +1,37 @@
 <template>
-  <div id="eodiro-banner-wrapper">
-    <div id="eodiro-banner" ref="banner" :class="{ mini: appearMini }">
+  <div id="eodiro-banner-wrapper" :class="{ mini: appearMini }">
+    <div id="eodiro-banner">
       <div class="banner">
-        <transition
-          v-for="hamletName in $store.state.hamletList"
-          :key="`bg-${hamletName}`"
-          name="bg-fade"
-        >
+        <transition name="bg-fade">
           <div
-            v-if="hamletName === $route.meta.hamletName"
-            class="background"
-            :class="`background--${hamletName}`"
+            v-if="!routeSwitch"
+            :class="`background background--${hamlet0}`"
+          />
+        </transition>
+        <transition name="bg-fade">
+          <div
+            v-if="routeSwitch"
+            :class="`background background--${hamlet1}`"
           />
         </transition>
         <transition name="global-soft-fade">
           <HomeBgTile v-if="$route.meta.hamletName === 'home' && !isNavMode" />
         </transition>
         <div class="logo-wrapper">
-          <transition
-            v-for="hamletName in $store.state.hamletList"
-            :key="`banner-${hamletName}`"
-            name="icon-change"
-          >
+          <transition name="icon-change">
             <div
-              v-if="hamletName === $route.meta.hamletName"
+              v-if="!routeSwitch"
               class="logo hamlet-icon"
-              :class="`hamlet--${hamletName}`"
+              :class="`hamlet--${hamlet0}`"
+            >
+              <span class="icon" />
+            </div>
+          </transition>
+          <transition name="icon-change">
+            <div
+              v-if="routeSwitch"
+              class="logo hamlet-icon"
+              :class="`hamlet--${hamlet1}`"
             >
               <span class="icon" />
             </div>
@@ -35,15 +41,20 @@
         <nav class="eodiro-navigation">
           <transition name="icon-change">
             <div class="nav-icon-wrapper">
-              <transition
-                v-for="hamletName in $store.state.hamletList"
-                :key="`nav-${hamletName}`"
-                name="fade"
-              >
+              <transition name="icon-change">
                 <div
-                  v-if="hamletName === $route.meta.hamletName"
+                  v-if="!routeSwitch"
                   class="nav-icon hamlet-icon"
-                  :class="[`hamlet--${hamletName}`]"
+                  :class="`hamlet--${hamlet0}`"
+                >
+                  <span class="icon" />
+                </div>
+              </transition>
+              <transition name="icon-change">
+                <div
+                  v-if="routeSwitch"
+                  class="nav-icon hamlet-icon"
+                  :class="`hamlet--${hamlet1}`"
                 >
                   <span class="icon" />
                 </div>
@@ -57,7 +68,6 @@
 </template>
 
 <script>
-import disableScroll from 'disable-scroll'
 import { CEM } from '~/modules/custom-event-manager'
 import HomeBgTile from '~/components/home/HomeBgTile.vue'
 
@@ -69,8 +79,17 @@ export default {
       isMini: false,
       isNavMode: false,
       observer: null,
-      sentinel: null
+      sentinel: null,
+      routeSwitch: 0,
+      zIndexSwitch: 0,
+      hamlet0: '',
+      hamlet1: '',
     }
+  },
+  computed: {
+    currentHamlet() {
+      return this.$route.meta.hamletName
+    },
   },
   watch: {
     isMini(bool) {
@@ -79,9 +98,23 @@ export default {
       } else {
         CEM.dispatchEvent('bannerspreaded')
       }
-    }
+    },
+    currentHamlet(next, previous) {
+      if (!this.routeSwitch) {
+        this.hamlet0 = previous
+        this.hamlet1 = next
+      } else {
+        this.hamlet1 = previous
+        this.hamlet0 = next
+      }
+
+      this.routeSwitch = !this.routeSwitch
+    },
   },
   created() {
+    // Initialize hamlet0 on server side
+    this.hamlet0 = this.currentHamlet
+
     if (this.$route.meta.depth > 1) {
       this.appearMini = true
     }
@@ -89,20 +122,27 @@ export default {
   mounted() {
     // Sentinel for banner
     this.sentinel = document.querySelector('#banner-observer-sentinel')
+    const bannerElm = document.getElementById('eodiro-banner')
     this.observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.target.isSameNode(this.sentinel)) {
           if (this.$route.meta.depth > 1) {
             this.isMini = true
             this.isNavMode = true
-            this.$refs.banner.classList.add('mini')
-            this.$refs.banner.classList.add('nav-mode')
+            this.$nextTick(() => {
+              // bannerElm.classList.add('mini')
+              bannerElm.classList.add('nav-mode')
+            })
           } else if (entry.isIntersecting) {
             this.isNavMode = false
-            this.$refs.banner.classList.remove('nav-mode')
+            this.$nextTick(() => {
+              bannerElm.classList.remove('nav-mode')
+            })
           } else {
             this.isNavMode = true
-            this.$refs.banner.classList.add('nav-mode')
+            this.$nextTick(() => {
+              bannerElm.classList.add('nav-mode')
+            })
           }
         }
       })
@@ -111,55 +151,70 @@ export default {
     // Start observing
     this.observer.observe(this.sentinel)
 
-    // When route changes(page move),
-    // after scroll position restoration
-    // reobserve the sentinel
-    CEM.addEventListener('scrollrestored', this.$el, (e) => {
-      // Reobserve sentinel
-      this.observer.observe(this.sentinel)
-      const scrollTop = e.detail.scrollPosition // Always positive
-      const pageDepth = e.detail.pageDepth
-      const bannerTop = Math.abs(this.$refs.banner.getBoundingClientRect().top) // Convert to positive
-      const distance = bannerTop - scrollTop
-      let newBannerTop = bannerTop - distance
-      const bannerHeight = this.$refs.banner.getBoundingClientRect().height
-      const navHeight = this.$refs.banner
-        .querySelector('.eodiro-navigation')
-        .getBoundingClientRect().height
-      if (pageDepth > 1) {
-        newBannerTop = bannerHeight - navHeight
-        this.$refs.banner.classList.add('mini')
-      } else {
-        this.$refs.banner.classList.remove('mini')
-      }
-      if (newBannerTop > bannerHeight - navHeight) {
-        newBannerTop = bannerHeight - navHeight
-      }
-      this.$refs.banner.classList.add('transitioning')
-      this.$refs.banner.style.transform = `translateY(${-newBannerTop}px)`
-      setTimeout(() => {
-        this.$refs.banner.style.cssText = ''
-        this.$refs.banner.classList.remove('transitioning')
-        disableScroll.off()
-      }, 350)
-    })
-
     // Before page leaves, unobserve sentinel
     // to prevent unexpected error
     CEM.addEventListener('beforepageleave', this.$el, () => {
       this.observer.unobserve(this.sentinel)
-      const top = this.$refs.banner.getBoundingClientRect().top
-      this.$refs.banner.style.cssText = `transform: translateY(${top}px); position: fixed; top: 0;`
-      disableScroll.on()
+      const bannerElm = document.getElementById('eodiro-banner')
+      const bannerWrapperElm = document.getElementById('eodiro-banner-wrapper')
+      const top = bannerElm.getBoundingClientRect().top
+      bannerWrapperElm.style.top = top + 'px'
+      bannerWrapperElm.style.position = 'fixed'
+      bannerWrapperElm.style.transform = 'translateY(0px)'
+      bannerWrapperElm.style.webkitTransform = 'translateY(0px)'
+      // disableScroll.on()
     })
-  }
+
+    // When route changes(page move),
+    // after scroll position restoration
+    // reobserve the sentinel
+    CEM.addEventListener('scrollrestored', this.$el, (e) => {
+      // disableScroll.off()
+      // // Reobserve sentinel
+      // this.observer.observe(this.sentinel)
+      // const bannerElm = document.getElementById('eodiro-banner')
+      // const bannerWrapperElm = document.getElementById('eodiro-banner-wrapper')
+      // const bannerRect = bannerElm.getBoundingClientRect()
+      // const bannerTop = Math.abs(bannerRect.top) // Convert to positive
+      // const scrollTop = e.detail.scrollPosition // Always positive
+      // const pageDepth = e.detail.pageDepth
+      // let distance = scrollTop - bannerTop
+      // const bannerHeight = bannerRect.height
+      // const navHeight = this.$el
+      //   .querySelector('.eodiro-navigation')
+      //   .getBoundingClientRect().height
+      // const bannerHeightWithoutNav = bannerHeight - navHeight
+      // // let newBannerTop = bannerTop - distance
+      // if (pageDepth > 1) {
+      //   distance = bannerHeightWithoutNav - bannerTop
+      //   bannerWrapperElm.classList.add('mini')
+      // } else {
+      //   bannerWrapperElm.classList.remove('mini')
+      // }
+      // if (scrollTop > bannerHeightWithoutNav) {
+      //   distance = -(bannerTop - bannerHeightWithoutNav)
+      // }
+      // console.log(`distance`, distance)
+      // bannerWrapperElm.classList.add('transitioning')
+      // // eslint-disable-next-line no-unused-expressions
+      // bannerWrapperElm.getBoundingClientRect().top
+      // bannerWrapperElm.style.transform = `translateY(${-distance}px)`
+      // bannerWrapperElm.style.webkitTransform = `translateY(${-distance}px)`
+      // setTimeout(() => {
+      //   bannerWrapperElm.style.cssText = ''
+      //   bannerWrapperElm.classList.remove('transitioning')
+      //   disableScroll.off()
+      //   CEM.dispatchEvent('bannertransitionended')
+      // }, 300)
+    })
+  },
 }
 </script>
 
 <style lang="scss">
 @import '~/assets/styles/scss/main';
 
-$banner-transition-time: 350ms;
+$banner-transition-time: 300ms;
 $banner-bezier: cubic-bezier(0.34, 0.23, 0, 1);
 
 #eodiro-banner-wrapper {
@@ -168,17 +223,26 @@ $banner-bezier: cubic-bezier(0.34, 0.23, 0, 1);
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
   user-select: none;
   pointer-events: none;
+
+  &.transitioning {
+    transition: transform $banner-transition-time $banner-bezier !important;
+  }
+
+  &.mini {
+    position: fixed;
+    transform: translateY(calc(#{$nav-height} - #{$banner-height}));
+    top: 0;
+  }
 }
 
 #eodiro-banner {
   pointer-events: all;
   z-index: 9999;
-  position: sticky;
-  top: 0;
-  top: calc(#{$nav-height} - #{$banner-height});
+  // position: sticky;
+  // top: 0;
+  // top: calc(#{$nav-height} - #{$banner-height});
   width: 100%;
   height: $banner-height;
   display: flex;
@@ -257,16 +321,8 @@ $banner-bezier: cubic-bezier(0.34, 0.23, 0, 1);
       align-items: center;
       justify-content: center;
 
-      // &.bg-fade-enter-active {
-      //   transition: opacity 500ms ease;
-      //   opacity: 1;
-      //   z-index: 0;
-      // }
-      // &.bg-fade-enter {
-      //   opacity: 1;
-      // }
       &.bg-fade-leave-active {
-        transition: opacity 600ms ease;
+        transition: opacity 500ms ease;
         opacity: 1;
         z-index: 1;
       }
@@ -274,9 +330,11 @@ $banner-bezier: cubic-bezier(0.34, 0.23, 0, 1);
         opacity: 0;
       }
 
-      &.background--signin,
-      &.background--signup {
-        background-image: linear-gradient(to bottom, #987eff, #5f14be);
+      &.background--sign-in,
+      &.background--sign-up,
+      &.background--forgot,
+      &.background--me {
+        background-image: linear-gradient(to bottom, #7b5aff, #5f14be);
       }
       &.background--home {
         background-image: linear-gradient(to bottom, $c-step--3, $c-step--4);
@@ -299,14 +357,17 @@ $banner-bezier: cubic-bezier(0.34, 0.23, 0, 1);
       &.background--clubs {
         background-image: linear-gradient(to bottom, #00e3d6, #00b5dd);
       }
-      &.background--search-class {
-        background-image: linear-gradient(to bottom, #56f23d, #00d749);
+      &.background--lectures {
+        background-image: linear-gradient(to bottom, #6ccf2f, #02ba41);
       }
       &.background--pepero-square {
         background-image: linear-gradient(to bottom, #ff79b9, #ff3e78);
       }
-      &.background--meals {
+      &.background--cafeteria {
         background-image: linear-gradient(to bottom, #31a8ff, #305dff);
+      }
+      &.background--privacy {
+        background-image: linear-gradient(to bottom, #33d9a7, #04ab65);
       }
     }
 
@@ -393,43 +454,55 @@ $banner-bezier: cubic-bezier(0.34, 0.23, 0, 1);
       display: block;
       width: 100%;
       height: 100%;
+      background-position: center;
+      background-size: 4.5rem;
+      background-repeat: no-repeat;
+    }
+
+    &.nav-icon {
+      .icon {
+        background-size: 2.5rem !important;
+      }
     }
 
     &.hamlet--home {
       .icon {
-        @include bgImg(
-          '~assets/images/eodiro_logo_arrow_white.svg',
-          center,
-          '50%'
-        );
+        background-image: url(~assets/images/icons/eodiro-arrow-white.svg);
 
         @include dark-mode {
-          @include bgImg(
-            '~assets/images/eodiro_logo_arrow_black.svg',
-            center,
-            '50%'
-          );
+          background-image: url(~assets/images/icons/eodiro-arrow.svg);
         }
       }
     }
 
-    &.hamlet--signin,
-    &.hamlet--signup {
+    &.hamlet--sign-in,
+    &.hamlet--sign-up,
+    &.hamlet--forgot {
       .icon {
-        @include bgImg('~assets/images/key-white.svg', center, '75%');
+        background-image: url(~assets/images/key-white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/key.svg', center, '75%');
+          background-image: url(~assets/images/key.svg);
+        }
+      }
+    }
+
+    &.hamlet--me {
+      .icon {
+        background-image: url(~assets/images/man-white.svg);
+
+        @include dark-mode {
+          background-image: url(~assets/images/man.svg);
         }
       }
     }
 
     &.hamlet--vacant {
       .icon {
-        @include bgImg('~assets/images/door_white.svg', center, '75%');
+        background-image: url(~assets/images/door_white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/door_black.svg', center, '75%');
+          background-image: url(~assets/images/door_black.svg);
         }
       }
     }
@@ -446,80 +519,89 @@ $banner-bezier: cubic-bezier(0.34, 0.23, 0, 1);
 
       .icon {
         animation: rotatingGear 5s linear 0s infinite normal forwards;
-
-        @include bgImg('~assets/images/gear_white.svg', center, '75%');
+        background-image: url(~assets/images/gear_white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/gear_black.svg', center, '75%');
+          background-image: url(~assets/images/gear_black.svg);
         }
       }
     }
 
     &.hamlet--inquiry {
       .icon {
-        @include bgImg('~assets/images/inquiry_white.svg', center, '75%');
+        background-image: url(~assets/images/inquiry_white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/inquiry_black.svg', center, '75%');
+          background-image: url(~assets/images/inquiry_black.svg);
         }
       }
     }
 
     &.hamlet--donation {
       .icon {
-        @include bgImg('~assets/images/heart_white.svg', center, '75%');
+        background-image: url(~assets/images/heart_white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/heart_black.svg', center, '75%');
+          background-image: url(~assets/images/heart_black.svg);
         }
       }
     }
     &.hamlet--opensource {
       .icon {
-        @include bgImg('~assets/images/heart_white.svg', center, '75%');
+        background-image: url(~assets/images/heart_white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/heart_black.svg', center, '75%');
+          background-image: url(~assets/images/heart_black.svg);
         }
       }
     }
 
     &.hamlet--clubs {
       .icon {
-        @include bgImg('~assets/images/three-white.svg', center, '75%');
+        background-image: url(~assets/images/three-white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/three-black.svg', center, '75%');
+          background-image: url(~assets/images/three-black.svg);
         }
       }
     }
 
-    &.hamlet--search-class {
+    &.hamlet--lectures {
       .icon {
-        @include bgImg('~assets/images/magnifier-white.svg', center, '75%');
+        background-image: url(~assets/images/magnifier-white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/magnifier-black.svg', center, '75%');
+          background-image: url(~assets/images/magnifier-black.svg);
         }
       }
     }
 
     &.hamlet--pepero-square {
       .icon {
-        @include bgImg('~assets/images/community-white.svg', center, '75%');
+        background-image: url(~assets/images/community-white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/community.svg', center, '75%');
+          background-image: url(~assets/images/community.svg);
         }
       }
     }
 
-    &.hamlet--meals {
+    &.hamlet--cafeteria {
       .icon {
-        @include bgImg('~assets/images/fork_knife_white.svg', center, '75%');
+        background-image: url(~assets/images/fork_knife_white.svg);
 
         @include dark-mode {
-          @include bgImg('~assets/images/fork_knife_black.svg', center, '75%');
+          background-image: url(~assets/images/fork_knife_black.svg);
+        }
+      }
+    }
+
+    &.hamlet--privacy {
+      .icon {
+        background-image: url(~assets/images/shield-white.svg);
+
+        @include dark-mode {
+          background-image: url(~assets/images/shield.svg);
         }
       }
     }

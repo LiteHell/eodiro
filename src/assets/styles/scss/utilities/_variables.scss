@@ -1,7 +1,7 @@
 // background colors
 // #fff for over white, #000 over black
 $base-white-blue: #f5f6f8;
-$base-black-soft: #181818;
+$base-black-soft: #1d1d1d;
 
 // text colors
 $base-white: #f0f0f0;
@@ -15,8 +15,8 @@ $c-step--3: #ff7037;
 $c-step--4: #ff3852;
 
 // translucent colors
-$t-white: rgba(255, 255, 255, 0.035);
-$t-black: rgba(0, 0, 0, 0.035);
+$t-white: rgba(255, 255, 255, 0.08);
+$t-black: rgba(0, 0, 0, 0.04);
 
 // high contrast colors
 // @deprecated
@@ -33,13 +33,13 @@ $width-step--2_: 1401px;
 // check default.vue
 $master-content-max-width: 60rem;
 $master-content-top-gap: 2rem;
-$master-content-bottom-gap: 8rem;
+$master-content-bottom-gap: 9rem;
 
 // EodiroBanner.vue
 // if you modify these values
 // you should also modify HomeBgTile component
 $banner-height: 37vh;
-$nav-height: 3.5rem;
+$nav-height: 3rem;
 
 // button
 $btn-height: 3rem;

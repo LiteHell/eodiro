@@ -2,10 +2,16 @@
 @import '~/assets/styles/scss/global/typography';
 @import '~/assets/styles/scss/global/simplebar-custom';
 @import '~/assets/styles/scss/global/transition';
+@import '~/assets/styles/scss/global/input';
+@import '~/assets/styles/scss/global/select';
+@import '~assets/styles/scss/utilities/htmlcss';
 
-::-webkit-scrollbar {
-  display: none; /* chrome */
-}
+// UI6
+@import '~assets/styles/scss/utilities/ui6';
+
+// ::-webkit-scrollbar {
+//   display: none; /* chrome */
+// }
 
 html {
   -ms-text-size-adjust: 100%;
@@ -27,6 +33,7 @@ html {
   }
   @media (prefers-color-scheme: dark) {
     &.auto-color-scheme {
+      background-color: $base-black-soft;
       background-color: #000;
 
       .mode--light {
@@ -40,7 +47,7 @@ html {
   }
 
   &.light-mode {
-    background-color: #fff;
+    background-color: $base-white-blue;
 
     .mode--dark {
       display: none !important;
@@ -53,6 +60,7 @@ html {
   @media (prefers-color-scheme: light) {
     &.auto-color-scheme {
       background-color: #fff;
+      background-color: $base-white-blue;
 
       .mode--dark {
         display: none !important;
@@ -67,12 +75,12 @@ html {
 
 @media only screen and (min-width: 700px) {
   html {
-    font-size: 95%;
+    font-size: 93%;
   }
 }
 @media only screen and (min-width: 1400px) {
   html {
-    font-size: 105%;
+    font-size: 100%;
   }
 }
 
@@ -88,6 +96,7 @@ body {
   word-break: keep-all;
   font-size: 16px;
   user-select: none;
+  overflow-anchor: none; // prevent always scroll end
   @include bg;
   @include text-color;
 }
@@ -134,12 +143,20 @@ input {
   border: none;
 }
 
-input,
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='search'],
 textarea {
   @include input-style;
 }
 
-p {
+[disabled] {
+  opacity: 0.5;
+}
+
+p,
+a {
   @include paragraph;
 }
 
@@ -232,4 +249,15 @@ ol {
 
 .stagger-appear-fix {
   opacity: 1 !important;
+}
+
+// PAYW Icon
+.payw-icon {
+  height: 1.3em;
+  width: auto;
+}
+
+.eodiro-topbar {
+  top: 50% !important;
+  transform: translateY(-50%);
 }

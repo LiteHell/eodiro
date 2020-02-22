@@ -12,8 +12,8 @@
           localePath({
             name: 'vacant-buildingId',
             params: {
-              buildingId: building.number
-            }
+              buildingId: building.number,
+            },
           })
         "
         @click="showTopbar()"
@@ -53,27 +53,27 @@ export default {
   name: 'vacant-building',
   components: { Grid, ArrowBlock },
   mixins: [pageBase],
-  data() {
-    return {
-      buildings: []
-    }
-  },
   asyncData({ app, redirect }) {
     const campus = 'seoul'
     const url = `https://api.eodiro.com/v2/campuses/${campus}/vacant/buildings`
 
     return axios(url, {
-      method: 'get'
+      method: 'get',
     })
       .then((res) => {
         return {
-          buildings: res.data.buildings
+          buildings: res.data.buildings,
         }
       })
       .catch(() => {
         redirect(app.localePath('not-found'))
       })
-  }
+  },
+  data() {
+    return {
+      buildings: [],
+    }
+  },
 }
 </script>
 

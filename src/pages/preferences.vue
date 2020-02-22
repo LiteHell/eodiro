@@ -7,7 +7,7 @@
           {{ $t('pref.lang') }}
         </h2>
         <div class="options">
-          <Button class="opt" @click="switchLang('kr')">
+          <Button class="opt" @click="switchLang('ko')">
             한국어
           </Button>
           <Button class="opt" @click="switchLang('en')">
@@ -42,24 +42,19 @@
 </template>
 
 <script>
-import Cookies from 'js-cookie'
 import pageBase from '~/mixins/page-base'
 import { Button } from '~/components/ui'
-import autohead from '~/modules/autohead'
+import autoHead from '~/modules/auto-head'
+import CookieConfig from '~~/config/cookie'
+import EodiroCookie, { defaultCookieOptions } from '~/modules/cookie'
 
 export default {
   name: 'preferences',
   components: { Button },
   mixins: [pageBase],
-  head() {
-    return {
-      title: this.$t('pref.title'),
-      meta: [...autohead(this.$t('pref.title'))]
-    }
-  },
   data() {
     return {
-      autoDarkModeSupport: false
+      autoDarkModeSupport: false,
     }
   },
   mounted() {
@@ -71,14 +66,27 @@ export default {
     }
   },
   methods: {
-    switchLang(lang) {
-      Cookies.set('i18n_lang', lang, { expires: 99999 })
-      location.reload()
+    /**
+     * @param {'ko' | 'en'} lang
+     */
+    async switchLang(lang) {
+      await new EodiroCookie().set(
+        CookieConfig.langCookieName,
+        lang,
+        defaultCookieOptions
+      )
+      window.location.reload()
     },
-    switchColorScheme(mode) {
-      this.$store.commit('SET_COLOR_SCHEME', mode)
+    async switchColorScheme(mode) {
+      await this.$store.dispatch('setColorScheme', { mode })
+    },
+  },
+  head() {
+    return {
+      title: this.$t('pref.title'),
+      meta: [...autoHead(this.$t('pref.title'))],
     }
-  }
+  },
 }
 </script>
 

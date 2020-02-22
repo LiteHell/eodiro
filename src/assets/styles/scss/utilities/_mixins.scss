@@ -24,6 +24,12 @@
   }
 }
 
+@mixin on-english {
+  [lang='en'] & {
+    @content;
+  }
+}
+
 // transitions
 @mixin ui-transition {
   transition: border $color-scheme-transition-time ease,
@@ -34,17 +40,21 @@
 @mixin bg {
   @include ui-transition;
   background-color: #fff;
+  background-color: $base-white-blue;
 
   @include dark-mode {
     background-color: #000;
+    // background-color: $base-black-soft;
   }
 }
 @mixin bg-inverted {
   @include ui-transition;
   background-color: #000;
+  background-color: $base-black-soft;
 
   @include dark-mode {
     background-color: #fff;
+    background-color: $base-white-blue;
   }
 }
 
@@ -69,9 +79,13 @@
 // element fill
 @mixin elm-fill {
   background-color: $base-white-blue;
+  background-color: #fff;
+  border: 1px solid rgba($color: #000, $alpha: 0.1);
 
   @include dark-mode {
     background-color: $base-black-soft;
+    // background-color: #000;
+    border: 1px solid rgba($color: #fff, $alpha: 0.1);
   }
 }
 @mixin elm-fill-inverted {
@@ -111,28 +125,6 @@
 }
 @mixin on-mobile {
   @include smaller-than($width-step--1) {
-    @content;
-  }
-}
-
-// gap
-// @depreacted
-@mixin gap($custom-gap: null) {
-  @if $custom-gap {
-    $gap: $custom-gap !global;
-  } @else {
-    $gap: $posh-gap !global;
-  }
-
-  @content;
-
-  @include on-mobile {
-    @if $custom-gap {
-      $gap: $custom-gap / 1.25 !global;
-    } @else {
-      $gap: $posh-gap / 1.25 !global;
-    }
-
     @content;
   }
 }
@@ -193,11 +185,15 @@ $border-color: rgba(#000, 0.1);
 $border-color-dark: rgba(#fff, 0.17);
 
 @mixin bordered {
-  border: 1px solid rgba(#000, 0.1) !important;
+  border: 1px solid rgba(#000, 0.1);
 
   @include dark-mode {
-    border: 1px solid rgba(#fff, 0.17) !important;
+    border: 1px solid rgba(#fff, 0.17);
   }
+}
+
+@mixin rounded {
+  border-radius: r(4);
 }
 
 // Forms
@@ -205,9 +201,10 @@ $input-border-radius: r(4);
 
 @mixin input-style {
   @include bordered;
-  border-radius: r(4);
+  @include rounded;
   @include text-color;
-  background-color: transparent;
+  @include elm-fill;
+  // background-color: transparent;
   font-size: b(2);
   padding: s(3);
   height: $btn-height !important;
@@ -218,4 +215,19 @@ $input-border-radius: r(4);
   resize: none;
 
   @include input-text;
+}
+
+// Flex center center
+@mixin center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin resolve-optical-illusion($value: null) {
+  @if $value {
+    margin-left: $value / 3;
+  } @else {
+    margin-left: r(4) / 3;
+  }
 }

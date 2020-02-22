@@ -1,52 +1,78 @@
-![banner](https://user-images.githubusercontent.com/19797697/62412275-ebaf3f80-b63a-11e9-8363-5d226ad57351.png)
+![banner](https://user-images.githubusercontent.com/19797697/73181225-d21c1b80-40e4-11ea-80b1-d84fa6bb3a0a.png)
 
 <p align="center"><b>eodiro</b> is an open source utility service for Chung-Ang university students.</p>
+<p align="center">
+  <a href="https://eodiro.com">https://eodiro.com</a>
+</p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/license/paywteam/eodiro.com" />
-  <img src="https://img.shields.io/github/stars/paywteam/eodiro.com?style=social" />
+  <img src="https://img.shields.io/github/license/paywteam/eodiro" />
+  <a href="https://github.com/paywteam/eodiro/actions">
+    <img src="https://github.com/paywteam/eodiro/workflows/ci/badge.svg" />
+  </a>
+  <img src="https://img.shields.io/github/v/release/paywteam/eodiro" />
+  <img src="https://img.shields.io/github/stars/paywteam/eodiro?style=social" />
 </p>
 
 ---
 
-## How to Use
+## Documentation
 
-https://eodiro.com
+**Wiki**
+
+- [Terms](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Terms.md)
+- [Design Guidelines](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Design-Guidelines.md)
+- [UI Components](https://github.com/paywteam/eodiro/blob/master/docs/wiki/UI-Components.md)
+- [CustomEvents](https://github.com/paywteam/eodiro/blob/master/docs/wiki/CustomEvents.md)
+- [Modules](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Modules.md)
+- [Plugins](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Plugins.md)
+- Middleware
+- [Vuex Store](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Vuex-Store.md)
+- [Vue Mixins](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Vue-Mixins.md)
+- Components
+  - [Banner](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Banner.md)
+  - [Tiles](https://github.com/paywteam/eodiro/blob/master/docs/wiki/Tiles.md)
+
+**[Changelog](https://github.com/paywteam/eodiro/blob/master/docs/Changelog.md)**
+
+**[ToDo](https://github.com/paywteam/eodiro/blob/master/docs/ToDo.md)**
 
 ## Build Instructions
 
-0. You must install Node.js and Yarn before following the steps below.
+1. You must install Node.js and Yarn before following the steps below.
 
-1. Download or clone the repository.
+2. Download or clone the repository.
 
-1. Go to the project's root directory and install dependencies.
+3. Go to the project's root directory and install dependencies.
 
 ```zsh
-→ yarn install
+% npm install
 ```
 
-3. Happy developing
+4. Happy developing
 
 ```zsh
 # Development
-→ yarn run dev
+% npm run dev
 ```
 
 ```zsh
 # Build and start the server
-→ yarn run build
-→ yarn run start
+% npm run build
+% npm run start
 ```
 
 ## Contributing
 
-You can leave an issue/pull request here or send us an email at support@eodiro.com, or contact@payw.org for more general things about us.
+Follow our [PAYW Contributing Guidelines](https://github.com/paywteam/contributing-guidelines).
+
+You can also leave an issue/pull request here or send us an email to support@eodiro.com, or contact@payw.org for more general things about us.
 
 ## License
 
 MIT License
 
-Copyright (c) 2019-current eodiro
+Copyright (c) 2019-2020 PAYW
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -90,14 +90,9 @@ import pageBase from '~/mixins/page-base'
 export default {
   name: 'donation',
   mixins: [pageBase],
-  head() {
-    return {
-      title: this.$t('donation.title')
-    }
-  },
   data() {
     return {
-      accountNumber: '7979-13-55256'
+      accountNumber: '7979-13-55256',
     }
   },
   mounted() {},
@@ -115,8 +110,13 @@ export default {
       tempTextArea.parentElement.removeChild(tempTextArea)
 
       window.alert(this.$t('donation.copied'))
+    },
+  },
+  head() {
+    return {
+      title: this.$t('donation.title'),
     }
-  }
+  },
 }
 </script>
 

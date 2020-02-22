@@ -35,30 +35,24 @@
 import axios from 'axios'
 import pageBase from '~/mixins/page-base'
 import { Button } from '~/components/ui'
-import autohead from '~/modules/autohead'
+import autoHead from '~/modules/auto-head'
 
 export default {
   name: 'inquiry',
   components: { Button },
   mixins: [pageBase],
-  head() {
-    return {
-      title: this.$t('inquiry.title'),
-      meta: [...autohead(this.$t('inquiry.title'))]
-    }
-  },
   data() {
     return {
       replyEmail: '',
       inquiryContent: '',
       minLength: 2,
-      maxLength: 500
+      maxLength: 500,
     }
   },
   computed: {
     currentLength() {
       return this.inquiryContent.length
-    }
+    },
   },
   mounted() {},
   methods: {
@@ -99,8 +93,8 @@ export default {
         method: 'post',
         data: {
           email: replyEmail,
-          text: inquiryContent
-        }
+          text: inquiryContent,
+        },
       })
         .then(() => {
           this.inquiryContent = ''
@@ -111,8 +105,14 @@ export default {
           window.alert(`${this.$t('global.error.dataSendError')}
           ${error}`)
         })
+    },
+  },
+  head() {
+    return {
+      title: this.$t('inquiry.title'),
+      meta: [...autoHead(this.$t('inquiry.title'))],
     }
-  }
+  },
 }
 </script>
 

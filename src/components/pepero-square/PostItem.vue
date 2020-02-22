@@ -5,21 +5,37 @@
       localePath({
         name: 'pepero-square-postId',
         params: {
-          postId: postData.id
-        }
+          postId: postData.id,
+        },
       })
     "
   >
     <template v-slot:content>
       <div class="pi-content">
-        <div class="pi-author">
-          {{ postData.author }}
-        </div>
+        <!-- <div class="pi-author">
+          {{ postData.random_nickname }}
+        </div> -->
         <div class="pi-title">
           {{ postData.title }}
         </div>
-        <div class="pi-posted-at">
-          {{ postedAt }}
+        <div class="pi-body">
+          {{ postData.body }}
+        </div>
+        <div class="information">
+          <div class="left">
+            <div class="pi-posted-at">
+              {{ postedAt }}
+            </div>
+            <div class="pi-random-nickname">
+              {{ postData.random_nickname }}
+            </div>
+          </div>
+          <div class="right">
+            <div class="pi-comment-count">
+              <IconBlocks fill="#ff3852" class="pi-cc-icon" />
+              <span class="pi-cc-value">{{ postData.comment_count }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -28,22 +44,24 @@
 
 <script>
 import dayjs from 'dayjs'
-import { ArrowBlock } from '~/components/ui'
+import { ArrowBlock, IconBlocks } from '~/components/ui'
 
 export default {
-  components: { ArrowBlock },
+  components: { ArrowBlock, IconBlocks },
   props: {
     postData: {
       type: Object,
-      default: () => ({})
-    }
+      default: () => ({}),
+    },
   },
   computed: {
     postedAt() {
-      let postedAt = dayjs(this.postData.at).format('YYYY. MM. DD. HH:mm')
+      let postedAt = dayjs(this.postData.uploaded_at).format(
+        'YYYY. MM. DD. HH:mm'
+      )
 
       const now = dayjs()
-      const atObj = dayjs(this.postData.at)
+      const atObj = dayjs(this.postData.uploaded_at)
 
       const secDiff = now.diff(atObj, 'second')
       if (secDiff < 10) {
@@ -69,14 +87,20 @@ export default {
 
       const hourDiff = now.diff(atObj, 'hour')
       if (hourDiff > 0 && hourDiff < 24) {
-        postedAt = `${hourDiff}시간 전`
+        postedAt = `
+        ${hourDiff}${this.$t('global.time.hour')} ${this.$t('global.time.ago')}
+        `
 
         return postedAt
       }
 
+      if (now.year() === atObj.year()) {
+        return dayjs(this.postData.uploaded_at).format('MM/DD HH:mm')
+      }
+
       return postedAt
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -101,14 +125,64 @@ export default {
       margin-bottom: s(2);
     }
 
-    .pi-title {
-      font-size: b(3);
+    .pi-title,
+    .pi-body {
+      word-break: break-all;
     }
 
-    .pi-posted-at {
+    .pi-title {
+      font-size: b(4);
+      font-weight: fw(5);
+    }
+
+    .pi-body {
+      margin-top: s(1);
+      font-size: b(3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .information {
+      margin-top: s(2);
       font-size: b(1);
       color: $base-gray;
-      margin-top: s(2);
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      .left {
+        display: flex;
+        flex-wrap: wrap;
+      }
+
+      .right {
+        .pi-comment-count {
+          color: $c-step--4;
+          display: flex;
+          align-items: center;
+          @include overlay-inverted;
+          padding: s(1) s(2);
+          border-radius: r(2);
+
+          .pi-cc-icon {
+            margin-right: s(1) / 2;
+          }
+
+          .pi-cc-value {
+            line-height: 1.1;
+            font-weight: 500;
+            display: inline-block;
+          }
+        }
+      }
+
+      .pi-posted-at {
+        margin-right: s(3);
+      }
+
+      .pi-random-nickname {
+      }
     }
   }
 }

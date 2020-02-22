@@ -1,6 +1,6 @@
 <template>
-  <div class="arrow-block" @click="$emit('click')">
-    <NuxtLink v-if="link !== ''" :to="link" class="absolute-link" />
+  <div class="arrow-block" :class="{ fit: fit }" @click="$emit('click')">
+    <EodiroLink v-if="link !== ''" :to="link" class="absolute-link" />
 
     <!-- only visible when icon slot is set -->
     <div v-if="$slots.icon" class="arrb-icon-wrapper">
@@ -18,27 +18,39 @@
 </template>
 
 <script>
+import EodiroLink from '~/components/global/EodiroLink'
+
 export default {
+  components: { EodiroLink },
   props: {
     noArrow: {
       type: Boolean,
-      required: false
+      required: false,
     },
     link: {
       type: String,
       required: false,
-      default: ''
-    }
-  }
+      default: '',
+    },
+    fit: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+  },
 }
 </script>
 
 <style lang="scss">
-@import '~/assets/styles/scss/main.scss';
+@import '~/assets/styles/scss/main';
 
 .arrow-block {
   @include block-style;
   cursor: pointer;
+
+  &.fit {
+    min-height: unset !important;
+  }
 
   .arrb-icon-wrapper {
     display: flex;
@@ -52,12 +64,13 @@ export default {
       height: $icon-size;
       background-position: center;
       background-repeat: no-repeat;
-      background-size: contain;
+      background-size: $icon-size $icon-size;
     }
   }
 
   .arrb-content-container {
-    flex: 1;
+    // flex: 1;
+    width: calc(100% - #{s(4) * 2});
     padding: 1rem 0;
   }
 
@@ -74,7 +87,7 @@ export default {
       background-image: url('~assets/images/arrow_right_gray.svg');
       background-position: center;
       background-repeat: no-repeat;
-      background-size: contain;
+      background-size: 0.6rem auto;
 
       @include dark-mode {
         background-image: url('~assets/images/arrow_right_dark.svg');

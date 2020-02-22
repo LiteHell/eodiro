@@ -2,13 +2,12 @@
   <img src="~assets/images/arrow_right_gray.svg" />
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
-import icon from '~/mixins/icon'
+<script>
+import icon from '~/components/ui/icons/icon'
 
-export default Vue.extend({
-  mixins: [icon]
-})
+export default {
+  mixins: [icon],
+}
 </script>
 
 <style lang="scss">

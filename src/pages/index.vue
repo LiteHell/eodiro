@@ -3,69 +3,41 @@
     <div class="page-content-wrapper">
       <div class="page-content">
         <Grid class="menu-item-container">
-          <ArrowBlock class="menu-item-wrapper disabled">
+          <!-- Sign In -->
+          <ArrowBlock
+            v-if="!$store.state.auth.isSignedIn"
+            class="menu-item-wrapper beta"
+            :link="localePath('sign-in').replace(/\/$/, '')"
+            @click="showTopbar"
+          >
             <template v-slot:icon>
               <span class="icon icon--signin" />
             </template>
             <template v-slot:content>
-              <span class="content">로그인</span>
+              <span class="content">{{ $t('auth.signIn') }}</span>
             </template>
           </ArrowBlock>
 
-          <!-- vacant classrooms -->
+          <!-- My Page -->
           <ArrowBlock
-            class="menu-item-wrapper"
-            :link="localePath('vacant').replace(/\/$/, '')"
+            v-else
+            class="menu-item-wrapper beta"
+            :link="localePath('me').replace(/\/$/, '')"
             @click="showTopbar"
           >
             <template v-slot:icon>
-              <span class="icon icon--vacant" />
+              <span class="icon icon--me" />
             </template>
             <template v-slot:content>
-              <span class="content">{{ $t('home.menuVacant') }}</span>
+              <span class="content">{{ $t('me.title') }}</span>
             </template>
           </ArrowBlock>
 
-          <!-- meals -->
+          <!-- Pepero Square -->
           <ArrowBlock
-            class="menu-item-wrapper"
-            :link="localePath('meals-date').replace(/\/$/, '')"
-            @click="showTopbar"
+            class="menu-item-wrapper beta"
+            :link="localePath('pepero-square').replace(/\/$/, '')"
           >
-            <template v-slot:icon>
-              <span class="icon icon--meals" />
-            </template>
-            <template v-slot:content>
-              <span class="content">{{ $t('home.menuMeal') }}</span>
-            </template>
-          </ArrowBlock>
-
-          <!-- search-class -->
-          <ArrowBlock
-            class="menu-item-wrapper"
-            :link="localePath('search-class').replace(/\/$/, '')"
-            @click="showTopbar"
-          >
-            <template v-slot:icon>
-              <span class="icon icon--search-class" />
-            </template>
-            <template v-slot:content>
-              <span class="content">{{ $t('home.menuClass') }}</span>
-            </template>
-          </ArrowBlock>
-
-          <!-- clubs -->
-          <ArrowBlock class="menu-item-wrapper disabled">
-            <template v-slot:icon>
-              <span class="icon icon--clubs" />
-            </template>
-            <template v-slot:content>
-              <span class="content">{{ $t('home.menuClubs') }}</span>
-            </template>
-          </ArrowBlock>
-
-          <!-- pepero square -->
-          <ArrowBlock class="menu-item-wrapper disabled">
             <template v-slot:icon>
               <span class="icon icon--pepero-square" />
             </template>
@@ -74,16 +46,44 @@
             </template>
           </ArrowBlock>
 
-          <!-- inquiry -->
+          <!-- Lectures -->
           <ArrowBlock
             class="menu-item-wrapper"
-            :link="localePath('inquiry').replace(/\/$/, '')"
+            :link="localePath('lectures').replace(/\/$/, '')"
+            @click="showTopbar"
           >
             <template v-slot:icon>
-              <span class="icon icon--inquiry" />
+              <span class="icon icon--lectures" />
             </template>
             <template v-slot:content>
-              <span class="content">{{ $t('home.menuInquiry') }}</span>
+              <span class="content">{{ $t('home.menuClass') }}</span>
+            </template>
+          </ArrowBlock>
+
+          <!-- Vacant Classrooms -->
+          <!-- <ArrowBlock
+            class="menu-item-wrapper"
+            :link="localePath('vacant').replace(/\/$/, '')"
+          >
+            <template v-slot:icon>
+              <span class="icon icon--vacant" />
+            </template>
+            <template v-slot:content>
+              <span class="content">{{ $t('home.menuVacant') }}</span>
+            </template>
+          </ArrowBlock> -->
+
+          <!-- Cafeteria Menus -->
+          <ArrowBlock
+            class="menu-item-wrapper"
+            :link="localePath('cafeteria-date').replace(/\/$/, '')"
+            @click="showTopbar"
+          >
+            <template v-slot:icon>
+              <span class="icon icon--cafeteria" />
+            </template>
+            <template v-slot:content>
+              <span class="content">{{ $t('home.menuMeal') }}</span>
             </template>
           </ArrowBlock>
 
@@ -100,7 +100,7 @@
             </template>
           </ArrowBlock> -->
 
-          <!-- open source -->
+          <!-- Open Source -->
           <ArrowBlock
             class="menu-item-wrapper"
             :link="localePath('opensource')"
@@ -113,7 +113,20 @@
             </template>
           </ArrowBlock>
 
-          <!-- preferences -->
+          <!-- Inquiry -->
+          <ArrowBlock
+            class="menu-item-wrapper"
+            :link="localePath('inquiry').replace(/\/$/, '')"
+          >
+            <template v-slot:icon>
+              <span class="icon icon--inquiry" />
+            </template>
+            <template v-slot:content>
+              <span class="content">{{ $t('home.menuInquiry') }}</span>
+            </template>
+          </ArrowBlock>
+
+          <!-- Preferences -->
           <ArrowBlock
             class="menu-item-wrapper"
             :link="localePath('preferences').replace(/\/$/, '')"
@@ -131,8 +144,16 @@
 
     <footer class="footer">
       <p class="manifesto">
-        Copyright © 2019 PAYW™
+        Copyright © 2020 PAYW |
+        <NuxtLink :to="localePath('privacy')">
+          {{ $t('privacy.title') }}
+        </NuxtLink>
       </p>
+      <a href="https://github.com/paywteam/eodiro/releases" target="_blank">
+        <div class="version">
+          {{ version }}
+        </div>
+      </a>
     </footer>
   </div>
 </template>
@@ -140,16 +161,22 @@
 <script>
 import pageBase from '~/mixins/page-base'
 import { Grid, ArrowBlock } from '~/components/ui'
+import PackageJson from '~~/package.json'
 
 export default {
   name: 'home',
   components: { Grid, ArrowBlock },
   mixins: [pageBase],
+  computed: {
+    version() {
+      return 'v' + PackageJson.version.replace('-beta.', ' Beta ')
+    },
+  },
   methods: {
     preparing() {
       window.alert(this.$t('preparing'))
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -157,12 +184,38 @@ export default {
 @import '~/assets/styles/scss/main';
 
 #home {
+  padding-bottom: 5rem !important;
+
   .page-content-wrapper {
     width: 100%;
 
     .page-content {
       .menu-item-container {
         .menu-item-wrapper {
+          &.beta {
+            .content {
+              display: flex;
+              align-items: center;
+            }
+
+            .content::before {
+              content: '베타';
+              display: inline-block;
+              margin-right: s(3);
+              @include bg-inverted;
+              @include text-color-inverted;
+              border-radius: r(2);
+              padding: 0.3rem 0.4rem;
+              line-height: lh(1);
+              font-size: b(2);
+              font-weight: fw(5);
+
+              @include on-english {
+                content: 'Beta';
+              }
+            }
+          }
+
           &.disabled {
             opacity: 0.4;
             filter: grayscale(0.8);
@@ -183,6 +236,14 @@ export default {
         }
       }
 
+      .icon--me {
+        background-image: url('~assets/images/home/home-menu-icon-me.svg');
+
+        @include dark-mode {
+          background-image: url('~assets/images/home/home-menu-icon-me-black.svg');
+        }
+      }
+
       .icon--vacant {
         background-image: url('~assets/images/home/home_menu_icon_vacant.svg');
 
@@ -191,7 +252,7 @@ export default {
         }
       }
 
-      .icon--meals {
+      .icon--cafeteria {
         background-image: url('~assets/images/home/home_menu_icon_food.svg');
 
         @include dark-mode {
@@ -199,11 +260,11 @@ export default {
         }
       }
 
-      .icon--search-class {
-        background-image: url('~assets/images/home/home_menu_icon_search-class.svg');
+      .icon--lectures {
+        background-image: url('~assets/images/home/home_menu_icon_class.svg');
 
         @include dark-mode {
-          background-image: url('~assets/images/home/home_menu_icon_search-class_black.svg');
+          background-image: url('~assets/images/home/home_menu_icon_class_black.svg');
         }
       }
 
@@ -255,7 +316,18 @@ export default {
 
     .manifesto {
       color: $base-gray;
-      font-size: 0.9rem;
+      font-size: b(2);
+    }
+
+    .version {
+      font-size: b(1);
+      display: inline-block;
+      color: $c-step--4;
+      @include elm-fill;
+      padding: s(2);
+      border-radius: r(2);
+      margin-top: s(3);
+      line-height: 1.1;
     }
   }
 }

@@ -17,7 +17,7 @@ export default {
       interval: 0,
       resizeEvent: null,
       bannerWidth: null,
-      bannerHeight: null
+      bannerHeight: null,
     }
   },
   mounted() {
@@ -130,7 +130,7 @@ export default {
       for (let i = 0; i < tileNum; i++) {
         ts.push({
           key: i,
-          className: 'color-1'
+          className: 'color-1',
         })
       }
       this.tileStates = ts
@@ -158,7 +158,7 @@ export default {
         for (let i = 0; i < diff; i++) {
           this.tileStates.push({
             key: previousTileNum + i,
-            className: 'color-1'
+            className: 'color-1',
           })
         }
       } else if (diff < 0) {
@@ -183,15 +183,15 @@ export default {
         return this.tileStates.length
       }
       return 0
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss">
 @import '~/assets/styles/scss/main.scss';
 
 #tiles-container {
-  z-index: 1;
+  z-index: -1;
   position: absolute;
   width: 105%;
   height: auto;
@@ -205,11 +205,10 @@ export default {
     grid-template-columns: repeat(auto-fit, minmax(3rem, 1fr));
     grid-template-rows: repeat(auto-fit, minmax(3rem, 1fr));
   }
-  z-index: 9999;
 
   .tile {
     border-radius: 1rem;
-    background-color: #fff0f3;
+    background-color: #a8a9ad;
     opacity: 0;
     transition: opacity 500ms linear,
       background-color $color-scheme-transition-time ease;
@@ -219,7 +218,7 @@ export default {
     }
 
     @include dark-mode {
-      background-color: #63000d;
+      background-color: #707174;
     }
 
     &::before {

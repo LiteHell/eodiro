@@ -1,24 +1,25 @@
 module.exports = {
   root: true,
+  parser: 'vue-eslint-parser',
   parserOptions: {
-    parser: '@typescript-eslint/parser',
-    sourceType: 'module',
-    ecmaVersion: 2018
+    parser: 'babel-eslint',
+    ecmaVersion: 2018,
+    sourceType: 'module'
   },
   env: {
     es6: true,
-    node: true,
     browser: true
   },
   extends: [
     'eslint:recommended',
     'standard',
     'plugin:vue/recommended',
-    '@nuxtjs/eslint-config-typescript',
-    'prettier'
+    'prettier/vue',
+    '@nuxtjs',
+    'plugin:prettier/recommended'
   ],
   rules: {
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'space-before-function-paren': [
       'error',
@@ -40,6 +41,19 @@ module.exports = {
         svg: 'always',
         math: 'always'
       }
-    ]
+    ],
+    // 'vue/max-attributes-per-line': [
+    //   2,
+    //   {
+    //     singleline: 20,
+    //     multiline: {
+    //       max: 1,
+    //       allowFirstLine: false
+    //     }
+    //   }
+    // ],
+    'no-extra-semi': [0],
+    'no-unused-vars': [1],
+    'vue/no-v-html': [0]
   }
 }

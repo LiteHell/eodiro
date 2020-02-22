@@ -9,9 +9,10 @@ export default {
   props: {
     full: {
       type: Boolean,
-      required: false
-    }
-  }
+      default: false,
+      required: false,
+    },
+  },
 }
 </script>
 
@@ -21,11 +22,11 @@ export default {
 .btn {
   @include elm-fill;
   color: $base-black;
-  height: $btn-height !important;
+  min-height: $btn-height !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1.5rem !important;
+  padding: 0.5rem 1rem !important;
   border-radius: r(4) !important;
   cursor: pointer;
 

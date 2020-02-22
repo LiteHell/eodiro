@@ -1,117 +1,112 @@
 <template>
   <div id="post-details">
-    <div class="post-wrapper">
-      <div class="post">
-        <span class="at">{{ postData.at }}</span>
-        <h2 class="author">
-          {{ postData.author }}
-        </h2>
-        <h1 class="title">
-          {{ postData.title }}
-        </h1>
-        <p class="body">
-          {{ postData.body }}
-        </p>
-        <div class="actions">
+    <div v-if="postData && isSignedIn">
+      <div class="post-wrapper">
+        <div class="post">
+          <span class="at">{{ uploadedAt }}</span>
+          <h2 class="author">
+            {{ postData.random_nickname }}
+          </h2>
+          <h1 class="title">
+            {{ postData.title }}
+          </h1>
+          <p class="body" v-html="postBody" />
+          <!-- <div class="actions">
           <button
             class="like"
             :class="{ fill: postData.isLiked }"
             @click="toggleLike"
           />
+        </div> -->
         </div>
       </div>
+
+      <Comments :post-id="postData.id" />
     </div>
 
-    <div class="comments-container">
-      <h2 class="comment-header">
-        {{ $t('peperoSquare.comments') }}
-      </h2>
-
-      <div class="comment-item-container">
-        <div v-for="comment in comments" :key="comment.id" class="comment-item">
-          <p class="author">
-            {{ comment.author }}
-          </p>
-          <p class="body">
-            {{ comment.body }}
-          </p>
-        </div>
-
-        <div v-if="comments.length === 0" class="no-comments">
-          <p>
-            {{ $t('peperoSquare.noComments') }}
-          </p>
-        </div>
-
-        <NewComment @leaveNewComment="leaveNewComment" />
+    <div v-else class="unavailable">
+      <div class="item-wrapper">
+        <h1>
+          <div class="icon">
+            {{ icon }}
+          </div>
+          {{ unavailableHeadline }}
+        </h1>
+        <p v-if="!postData" class="sub">
+          포스트가 삭제되었거나 잘못된 URL입니다.
+        </p>
+        <EodiroLink
+          v-if="!isSignedIn"
+          :to="localePath('sign-in')"
+          class="login"
+        >
+          {{ $t('auth.signIn') + ' →' }}
+        </EodiroLink>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { LoremIpsum } from 'lorem-ipsum'
 import dayjs from 'dayjs'
-// import axios from 'axios'
 import pageBase from '~/mixins/page-base'
-import NewComment from '~/components/pepero-square/NewComment'
-// import { CEM } from '~/modules/custom-event-manager'
-
-const lorem = new LoremIpsum()
+import Comments from '~/components/pepero-square/Comments'
+import escapeHtml from '~/modules/escape-html'
+import { SquareApi } from '~/modules/eodiro-api'
+import Auth from '~/modules/auth'
+import EodiroLink from '~/components/global/EodiroLink'
 
 export default {
   name: 'pepero-square-post-id',
-  components: { NewComment },
+  components: { Comments, EodiroLink },
   mixins: [pageBase],
+  async asyncData({ route, app, store, redirect, req, res }) {
+    // if (!store.state.auth.isSignedIn) return
+    if (!Auth.isSignedInQuick()) {
+      return
+    }
+
+    const postId = route.params.postId
+    const postData = await new SquareApi({ req, res }).getPostItem(postId)
+
+    return { postData }
+  },
   data() {
     return {
-      lastCommentId: 0
+      lastCommentId: 0,
+      postData: {},
+      comments: [],
     }
   },
-  asyncData({ route }) {
-    // axios({
-    //   method: 'get',
-    //   url: ''
-    // }).then((response) => {
-    //   return response.data
-    // }).catch(() => {
-    //   redirect(app.localePath('not-found'))
-    // })
-    return {
-      postData: {
-        id: route.params.postId,
-        at: dayjs().format('YYYY. MM. DD. HH:mm'),
-        title: lorem.generateSentences(1),
-        body: lorem.generateParagraphs(2),
-        author: lorem.generateWords(1),
-        isLiked: false
-      },
-      comments: Array.from({ length: Math.floor(Math.random() * 10) }, (i) => {
-        return {
-          id: i,
-          author: lorem.generateWords(1),
-          body: lorem.generateSentences(1)
-        }
-      })
-    }
-  },
-  mounted() {
-    // document.addEventListener('scrollends', this.loadData)
-    // CEM.addEventListener('scrollends', this.$el, this.loadData)
+  computed: {
+    isSignedIn() {
+      return Auth.isSignedInQuick()
+    },
+    uploadedAt() {
+      return dayjs(this.postData.uploaded_at).format('YYYY. MM. DD. HH:mm')
+    },
+    postBody() {
+      return escapeHtml(this.postData.body).replace(/(?:\r\n|\r|\n)/g, '<br>')
+    },
+    icon() {
+      return !this.isSignedIn ? '🔐' : '🙅‍♂️'
+    },
+    unavailableHeadline() {
+      return !this.isSignedIn
+        ? '로그인이 필요한 기능입니다.'
+        : '포스트가 존재하지 않습니다.'
+    },
   },
   methods: {
     toggleLike() {
       this.postData.isLiked = !this.postData.isLiked
     },
-    loadData() {
-      // AJAX again from comment id of lastly loaded
-    },
     leaveNewComment(commentData) {
       this.comments.push(commentData)
 
       // AJAX
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -144,11 +139,18 @@ export default {
         border-radius: r(2);
       }
 
+      .title,
+      .body {
+        word-break: break-all;
+      }
+
       .title {
         margin-top: s(2);
+        font-size: h(5);
       }
 
       .body {
+        font-size: b(3);
         margin-top: s(4);
       }
 
@@ -173,42 +175,34 @@ export default {
     }
   }
 
-  .comments-container {
-    margin-top: s(6);
+  .unavailable {
+    @include center;
+    text-align: center;
 
-    .comment-header {
-      @include bg;
-      padding: s(3) 0;
-      border-bottom: solid;
-      @include separator;
-      position: sticky;
-      top: $nav-height;
-    }
+    .item-wrapper {
+      padding: s(10);
+      @include elm-fill;
+      @include rounded;
 
-    .comment-item {
-      padding: s(3) s(1);
-      border-bottom: solid;
-      @include separator;
-
-      &:last-child {
-        margin-bottom: 0;
+      .icon {
+        font-size: 1.3em;
+        line-height: 1;
+        margin-bottom: s(3);
       }
 
-      .author {
-        line-height: lh(1);
-        margin-bottom: s(2);
-        font-weight: fw(5);
-      }
-
-      .body {
-        line-height: lh(2);
+      .sub {
+        margin-top: s(2);
         color: $base-gray;
       }
-    }
 
-    .no-comments {
-      padding: s(4) 0;
-      text-align: center;
+      .login {
+        display: inline-block;
+        margin-top: s(5);
+        color: $c-step--4;
+        @include overlay-inverted;
+        padding: s(2);
+        border-radius: r(3);
+      }
     }
   }
 }

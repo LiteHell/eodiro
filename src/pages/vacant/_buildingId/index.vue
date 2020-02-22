@@ -13,8 +13,8 @@
           localePath({
             name: 'vacant-buildingId-floorId',
             params: {
-              floorId: floor.number.toLowerCase()
-            }
+              floorId: floor.number.toLowerCase(),
+            },
           })
         "
         @click="showTopbar()"
@@ -50,29 +50,29 @@ export default {
   name: 'vacant-floor',
   components: { Grid, ArrowBlock },
   mixins: [pageBase],
-  data() {
-    return {
-      buildingName: '',
-      floors: [],
-      buildingId: this.$route.params.buildingId
-    }
-  },
   asyncData({ app, route, redirect }) {
     const campus = 'seoul'
     const url = `https://api.eodiro.com/v2/campuses/${campus}/vacant/buildings/${route.params.buildingId}/floors`
 
     return axios(url, {
-      method: 'get'
+      method: 'get',
     })
       .then((res) => {
         return {
-          floors: res.data.floors
+          floors: res.data.floors,
         }
       })
       .catch(() => {
         redirect(app.localePath('not-found'))
       })
-  }
+  },
+  data() {
+    return {
+      buildingName: '',
+      floors: [],
+      buildingId: this.$route.params.buildingId,
+    }
+  },
 }
 </script>
 

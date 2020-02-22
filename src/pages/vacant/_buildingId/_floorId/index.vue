@@ -109,7 +109,7 @@
                       l.time.start,
                       l.time.end,
                       l.time.day
-                    )
+                    ),
                   }"
                 >
                   <div class="time">
@@ -148,7 +148,6 @@
 
 <script>
 import axios from 'axios'
-import { disableBodyScroll, enableBodyScroll } from 'body-scroll-lock'
 import pageBase from '~/mixins/page-base'
 import modalScroll from '~/mixins/modal-scroll'
 import ExpireCounter from '~/modules/expire-counter'
@@ -158,6 +157,26 @@ export default {
   name: 'vacant-result',
   components: { Grid, ArrowBlock },
   mixins: [pageBase, modalScroll],
+  asyncData({ app, redirect, route }) {
+    const campus = 'seoul'
+    const url = `https://api.eodiro.com/v2/campuses/${campus}/vacant/buildings/${route.params.buildingId}/floors/${route.params.floorId}/classrooms`
+
+    return axios(url, {
+      method: 'get',
+    })
+      .then((res) => {
+        if (res.data.err) {
+          console.error(res.data.err.msg)
+        } else {
+          return {
+            classrooms: res.data.classrooms,
+          }
+        }
+      })
+      .catch(() => {
+        redirect(app.localePath('not-found'))
+      })
+  },
   data() {
     return {
       classrooms: [],
@@ -165,33 +184,13 @@ export default {
       isTimeTableActive: false,
       selectedRoom: {},
       timetableDay: new Date().getDay(),
-      selectedLectures: []
+      selectedLectures: [],
     }
   },
   computed: {
     timeInterval(start, end) {
       return start + end
-    }
-  },
-  asyncData({ app, redirect, route }) {
-    const campus = 'seoul'
-    const url = `https://api.eodiro.com/v2/campuses/${campus}/vacant/buildings/${route.params.buildingId}/floors/${route.params.floorId}/classrooms`
-
-    return axios(url, {
-      method: 'get'
-    })
-      .then((res) => {
-        if (res.data.err) {
-          console.error(res.data.err.msg)
-        } else {
-          return {
-            classrooms: res.data.classrooms
-          }
-        }
-      })
-      .catch(() => {
-        redirect(app.localePath('not-found'))
-      })
+    },
   },
   mounted() {
     // Calculate remaining time of each class after load
@@ -223,7 +222,6 @@ export default {
   methods: {
     closeTimeTable() {
       // Enable body scroll and
-      enableBodyScroll(this.$refs.timetable)
       this.isTimeTableActive = false
       this.isTimeTableVisible = false
     },
@@ -235,7 +233,6 @@ export default {
       this.$nextTick(() => {
         this.$refs.timeTableContainer.getBoundingClientRect()
         this.isTimeTableActive = true
-        disableBodyScroll(this.$refs.timetable)
       })
 
       // Set table data
@@ -264,8 +261,8 @@ export default {
       } else {
         return false
       }
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -297,10 +294,10 @@ export default {
     align-items: center;
     justify-content: center;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
     z-index: 10000;
 
     &.active {
@@ -332,8 +329,8 @@ export default {
     }
 
     .timetable {
-      width: calc(100% - 2rem);
-      height: calc(100% - 4rem);
+      width: 100%;
+      height: calc(100% - 5rem);
       max-width: 30rem;
       max-height: 40rem;
       background-color: #fff;

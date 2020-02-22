@@ -1,3 +1,8 @@
+/* topbar for eodiro
+ * (c) 2019 Jang Haemin
+ * @license MIT
+ */
+
 /*! topbar 0.1.3, 2014-12-09
  *  http://buunguyen.github.io/topbar
  *  Copyright (c) 2014 Buu Nguyen
@@ -50,30 +55,31 @@ const addEvent = function(elem, type, handler) {
 
 const lightModeOptions = {
   autoRun: true,
-  barThickness: 4,
+  barThickness: 3,
   barColors: {
-    '0': '#FFDF00',
-    '1.0': '#00E3D6'
+    0: '#ff3852',
+    '1.0': '#ff3852',
   },
-  shadowBlur: 3,
-  shadowColor: 'rgba(0, 0, 0, 0)'
+  shadowBlur: 0,
+  shadowColor: 'rgba(0, 0, 0, 0)',
 }
 
 const darkModeOptions = {
   autoRun: true,
   barThickness: 4,
   barColors: {
-    '0': '#fff',
-    '1.0': '#fff'
+    0: '#fff',
+    '1.0': '#fff',
   },
   shadowBlur: 3,
-  shadowColor: 'rgba(0, 0, 0, 0)'
+  shadowColor: 'rgba(0, 0, 0, 0)',
 }
 
 let options = lightModeOptions
 const repaint = function() {
   canvas.width = window.innerWidth
   canvas.height = options.barThickness * 5 // need space for shadow
+  canvas.className = 'eodiro-topbar'
 
   const ctx = canvas.getContext('2d')
   ctx.shadowBlur = options.shadowBlur
@@ -106,7 +112,7 @@ const createCanvas = function() {
 const topbar = {
   config(opts) {
     for (const key in opts) {
-      if (options.hasOwnProperty(key)) {
+      if (options[key]) {
         options[key] = opts[key]
       }
     }
@@ -171,7 +177,7 @@ const topbar = {
       }
       fadeTimerId = window.requestAnimationFrame(loop)
     })()
-  }
+  },
 }
 
 export default topbar
