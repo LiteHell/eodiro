@@ -123,7 +123,7 @@ import requireAuthMixin from '~/mixins/require-auth-mixin'
 import useAxios from '~/modules/use-axios'
 import { UserApi } from '~/modules/eodiro-api'
 import { Button, Grid, ArrowBlock } from '~/components/ui'
-import { isCached } from '~/modules/nuxt/is-cached'
+// import { isCached } from '~/modules/nuxt/is-cached'
 import EodiroLink from '~/components/global/EodiroLink'
 
 export default {
@@ -133,7 +133,7 @@ export default {
   async asyncData({ app, req, res, store, route }) {
     if (!store.state.auth.isSignedIn) return
 
-    if (isCached(store, route)) return
+    // if (isCached(store, route)) return
 
     const userApi = new UserApi()
     const myInfo = await userApi.getUserInfo({ req, res })
