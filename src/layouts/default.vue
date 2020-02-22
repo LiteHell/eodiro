@@ -46,65 +46,56 @@ export default {
     },
   },
   watch: {
-    $route(to, from) {
-      this.$store.commit('SET_IS_FIRST_LOAD', false)
-      this.isPointerEventsPrevented = true
-
-      // When route changes
-      // cache or remove components from keep-alive
-
-      if (from.meta.hamletName === to.meta.hamletName) {
-        // Clear jump history
-        this.$store.dispatch('clearJump', from.meta.hamletName)
-
-        if (from.meta.depth < to.meta.depth) {
-          // Route direction: forward
-          // Cache components included in the destination route
-          this.pushRoute(to)
-        } else if (from.meta.depth >= to.meta.depth) {
-          // Route direction: backward or same level
-
-          this.popRoute(from)
-
-          // Cache destination components if not cached
-          this.pushRoute(to)
-        }
-      } else {
-        // Redirect to different hamlet
-        // We call it 'Jump'
-
-        // Cache destination
-        this.pushRoute(to)
-
-        // TODO: Add a jump button to the previous hamlet route
-        if (from.meta.hamletName !== 'home' && to.meta.hamletName !== 'home') {
-          const jumpHistory = this.$store.state.jumpHistory
-          if (
-            jumpHistory.length > 0 &&
-            jumpHistory[jumpHistory.length - 1] === cleanPathName(to.name)
-          ) {
-            // Jump back
-            this.$store.dispatch('popJump', from.meta.hamletName)
-            this.popRoute(from)
-          } else {
-            // Jump forward
-            this.$store.dispatch('pushJump', cleanPathName(from.name))
-          }
-        }
-
-        // When go to home, clear the cache and jump history
-        if (to.meta.hamletName === 'home') {
-          this.$store.dispatch('clearJump')
-          this.$store.dispatch('clearComponent')
-          this.pushRoute(to)
-        }
-      }
-
-      // console.log(JSON.stringify(this.$store.state.cachedComponents, null, 2))
-      // console.log(
-      //   JSON.stringify(this.$store.state.hamletCachedComponents, null, 2)
-      // )
-    },
+    // $route(to, from) {
+    //   this.$store.commit('SET_IS_FIRST_LOAD', false)
+    //   this.isPointerEventsPrevented = true
+    //   // When route changes
+    //   // cache or remove components from keep-alive
+    //   if (from.meta.hamletName === to.meta.hamletName) {
+    //     // Clear jump history
+    //     this.$store.dispatch('clearJump', from.meta.hamletName)
+    //     if (from.meta.depth < to.meta.depth) {
+    //       // Route direction: forward
+    //       // Cache components included in the destination route
+    //       this.pushRoute(to)
+    //     } else if (from.meta.depth >= to.meta.depth) {
+    //       // Route direction: backward or same level
+    //       this.popRoute(from)
+    //       // Cache destination components if not cached
+    //       this.pushRoute(to)
+    //     }
+    //   } else {
+    //     // Redirect to different hamlet
+    //     // We call it 'Jump'
+    //     // Cache destination
+    //     this.pushRoute(to)
+    //     // TODO: Add a jump button to the previous hamlet route
+    //     if (from.meta.hamletName !== 'home' && to.meta.hamletName !== 'home') {
+    //       const jumpHistory = this.$store.state.jumpHistory
+    //       if (
+    //         jumpHistory.length > 0 &&
+    //         jumpHistory[jumpHistory.length - 1] === cleanPathName(to.name)
+    //       ) {
+    //         // Jump back
+    //         this.$store.dispatch('popJump', from.meta.hamletName)
+    //         this.popRoute(from)
+    //       } else {
+    //         // Jump forward
+    //         this.$store.dispatch('pushJump', cleanPathName(from.name))
+    //       }
+    //     }
+    //     // When go to home, clear the cache and jump history
+    //     if (to.meta.hamletName === 'home') {
+    //       this.$store.dispatch('clearJump')
+    //       this.$store.dispatch('clearComponent')
+    //       this.pushRoute(to)
+    //     }
+    //   }
+    //   // console.log(JSON.stringify(this.$store.state.cachedComponents, null, 2))
+    //   // console.log(
+    //   //   JSON.stringify(this.$store.state.hamletCachedComponents, null, 2)
+    //   // )
+    // },
   },
   created() {
     // Cache components on the first load
